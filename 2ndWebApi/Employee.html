@@ -9,16 +9,28 @@
             var ulEmp = $('#ulEmp');
 
             $('#btn').click(function () {
+                var username = $('#txtUsername').val();
+                var password = $('#txtpassword').val();
                 $.ajax({
                     type: 'GET',
                     url: 'api/Employee',
                     dataType: 'json',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(username + ':' + password)
+                    },
                     success: function (data) {
                         ulEmp.empty();
                         $.each(data, function (index, val) {
                             var name = val.Name;
-                            ulEmp.append('<li>'+ name +'</li>')
-                        })
+                            var gender = val.gender;
+                            ulEmp.append('<li>' + name + ' (' + gender + ')</li>');
+                        });
+                    },
+                    complete: function (jqXHR) {
+                        if (jqXHR == '401') {
+                            ulEmp.empty();
+                            ulEmp.append('<li style="color:red">' + jqXHR.state + ':' + jqXHR.statusText + '</li>');
+                        }
                     }
                 });
             });
@@ -30,8 +42,13 @@
     </script>
 </head>
 <body>
-    <input type="button" id="btn" value="Get all employee" />
-    <input type="button" id="btnClr" value="Clear" />
-    <ul id="ulEmp"></ul>
+    <div>
+        Username: <input type="text" id="txtUsername" />
+        Password: <input type="password" id="txtpassword" />
+        <br /><br />
+        <input type="button" id="btn" value="Authenticate & Get employee" />
+        <input type="button" id="btnClr" value="Clear" />
+        <ul id="ulEmp"></ul>
+    </div>    
 </body>
 </html>

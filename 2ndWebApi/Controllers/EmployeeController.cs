@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Web.Http;
 using EmployeeDataAccess2;
 
@@ -10,11 +11,13 @@ namespace _2ndWebApi.Controllers
 {
     public class EmployeeController : ApiController
     {
+        [BasicAuthenticationAttributes]
         public HttpResponseMessage GetEmployees(string gender="All")
         {
+            string username = Thread.CurrentPrincipal.Identity.Name;
             using (Test2Entities _db = new Test2Entities())
             {
-                switch(gender.ToLower())
+                switch(username.ToLower())
                 {
                     case "all" :
                         return Request.CreateResponse(HttpStatusCode.OK, _db.Employees.ToList());
